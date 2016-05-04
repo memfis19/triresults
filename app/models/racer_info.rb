@@ -1,0 +1,27 @@
+class RacerInfo
+  include Mongoid::Document
+
+  field :_id, default: -> { racer_id }
+  field :racer_id, as: :_id
+
+  field :fn, default: -> { first_name }
+  field :first_name, as: :fn, type: String
+
+  field :ln, default: -> { last_name }
+  field :last_name, as: :ln, type: String
+
+  field :g, default: -> { gender }
+  field :gender, as: :g, type: String
+
+  field :yr, default: -> { birth_year }
+  field :birth_year, as: :yr, type: Integer
+
+  field :res, default: -> { residence }
+  field :residence, as: :res, type: Address
+
+  embedded_in :parent, polymorphic: true
+
+  validates_presence_of :first_name, :last_name, :gender, :birth_year
+  validates :gender, inclusion: {in: %w(M F)}
+  validates :birth_year, numericality: {less_than: Date.current.year}
+end
