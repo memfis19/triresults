@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  bib: 1
+  secs: 1.5
+  overall: 
+  gender: 
+  group: 
+
+two:
+  bib: 1
+  secs: 1.5
+  overall: 
+  gender: 
+  group: 
