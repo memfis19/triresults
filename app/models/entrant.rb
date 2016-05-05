@@ -3,6 +3,7 @@ class Entrant
   include Mongoid::Timestamps
   store_in collection: 'results'
 
+  embeds_one :race, class_name: 'RaceRef'
   embeds_many :results, class_name: 'LegResult', after_add: :update_total, after_remove: :update_total, order: [:"event.o".asc]
 
   field :bib, type: Integer
@@ -12,9 +13,12 @@ class Entrant
   field :group, type: Placing
 
   def update_total(result)
-    sum = 0
     sum = results.map(&:secs).inject(0, &:+)
     self.secs = sum;
+  end
+
+  def the_race
+    race.race
   end
 
 end
