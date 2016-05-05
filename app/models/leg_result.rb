@@ -1,6 +1,6 @@
 class LegResult
   include Mongoid::Document
-  field :secs, type: Float
+  field :secs, type: Float, default: 0
 
   embedded_in :entrant
   embeds_one :event, as: :parent
