@@ -43,13 +43,19 @@ module Api
           render plain: :nothing, status: :ok
         end
       else
-        respond_with Race.create(params)
+        # respond_with Race.create(params)
+        @race = Race.create(params[:race].to_hash)
+        render plain: @race.name, content_type: "text/plain", status: :created
       end
 
     end
 
     def update
-      respond_with @race.update(params)
+      # respond_with @race.update(params)
+      if params[:race]
+        @race.update(params[:race].to_hash)
+        render json: @race, content_type: "application/json", status: :ok
+      end
     end
 
     def destroy

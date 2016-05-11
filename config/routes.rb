@@ -24,4 +24,5 @@ Rails.application.routes.draw do
   get "/api/racers/:racer_id/entries/:id" => "api/racers#show"
 
   post "/api/races" => "api/races#create"
+  put "/api/races/:id" => "api/races#update"
 end
