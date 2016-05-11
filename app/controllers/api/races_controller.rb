@@ -6,8 +6,15 @@ module Api
 
     def index
       if !request.accept || request.accept == "*/*"
+        query_params = request.query_parameters.to_hash if request.query_parameters
         if !params[:race_id]
-          render plain: "/api/races"
+          result = ""
+          query_params.keys.map { |item| result << ", #{item}=[#{query_params[item]}]" } if query_params
+          if !result.empty?
+            render plain: "/api/races" + "/"+ result
+          else
+            render plain: "/api/races"
+          end
         else
           render plain: "/api/races/#{params[:race_id]}/results"
         end
@@ -30,7 +37,11 @@ module Api
 
     def create
       if !request.accept || request.accept == "*/*"
-        render plain: :nothing, status: :ok
+        if params[:race] and params[:race][:name]
+          render plain: params[:race][:name], content_type: "text/plain", status: :ok
+        else
+          render plain: :nothing, status: :ok
+        end
       else
         respond_with Race.create(params)
       end
