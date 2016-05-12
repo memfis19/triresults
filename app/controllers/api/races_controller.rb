@@ -1,8 +1,12 @@
 module Api
   class RacesController < ApplicationController
     before_action :set_race, only: [:show, :edit, :update, :destroy]
-    respond_to :json
     protect_from_forgery with: :null_session
+    respond_to :json, :xml
+
+    rescue_from Mongoid::Errors::DocumentNotFound do |exception|
+      render plain: "woops: cannot find race[#{params[:id]}]", status: :not_found
+    end
 
     def index
       if !request.accept || request.accept == "*/*"
@@ -24,14 +28,33 @@ module Api
     end
 
     def show
+      if @race.nil?
+        @error = Hash.new
+        @error[:msg] = "woops: cannot find race[#{params[:id]}]"
+        if request.accept == "application/xml"
+          return render 'api/error_msg', formats: [:xml], status: :not_found
+        end
+        if request.accept == "application/json"
+          return render 'api/error_msg', formats: [:json], status: :not_found
+        end
+      end
       if !request.accept || request.accept == "*/*"
         if !params[:race_id]
-          render plain: "/api/races/#{params[:id]}"
+          return render plain: "/api/races/#{params[:id]}"
         else
-          render plain: "/api/races/#{params[:race_id]}/results/#{params[:id]}"
+          return render plain: "/api/races/#{params[:race_id]}/results/#{params[:id]}"
         end
       else
-        respond_with @race
+        if request.accept == "application/xml"
+          return render 'api/show', formats: [:xml]
+        end
+        if request.accept == "application/json"
+          return render 'api/show', formats: [:json]
+        end
+        # respond_with @race
+      end
+      if !request.accept || request.accept == "text/plain"
+        return render plain: "woops: we do not support that content-type[text/plain]", status: 415
       end
     end
 
@@ -52,6 +75,9 @@ module Api
 
     def update
       # respond_with @race.update(params)
+      if @race.nil?
+        return render plain: "woops: cannot find race[#{params[:id]}]", status: :not_found
+      end
       if params[:race]
         @race.update(params[:race].to_hash)
         render json: @race, content_type: "application/json", status: :ok
