@@ -89,13 +89,11 @@ module Api
     end
 
     private
-    # Use callbacks to share common setup or constraints between actions.
     def set_race
       @race = Race.find(params[:id])
     rescue Mongoid::Errors::DocumentNotFound => e
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def race_params
       params.require(:race).permit(:name, :date, :city, :state, :swim_distance, :swim_units, :bike_distance, :bike_units, :run_distance, :run_units, :race_id)
     end
