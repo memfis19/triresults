@@ -1,0 +1,53 @@
+<table>
+  <thead>
+  <tr>
+    <th>Place</th>
+    <th>Time</th>
+    <th>Name</th>
+    <th>Bib#</th>
+    <th>City</th>
+    <th>State</th>
+    <th>Gender</th>
+    <th>Gender Place</th>
+    <th>Group</th>
+    <th>Group Place</th>
+    <th>Swim</th>
+    <th>Pace 100</th>
+    <th>T1</th>
+    <th>Bike</th>
+    <th>MPH</th>
+    <th>T2</th>
+    <th>Run</th>
+    <th>Min Mile</th>
+    <th colspan="3"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr>
+    <td><%= @result.overall_place %></td>
+    <td><%= format_hours @result.secs %></td>
+    <% if @result.racer.id %>
+        <td><%= link_to "#{@result.last_name}, #{@result.first_name}", racer_path(@result.racer.id) %></td>
+    <% else %>
+        <td><%= "#{@result.last_name}, #{@result.first_name}" %></td>
+    <% end %>
+    <td><%= @result.bib %></td>
+    <td><%= @result.city %></td>
+    <td><%= @result.state %></td>
+    <td><%= @result.racer_gender %></td>
+    <td><%= @result.gender_place %></td>
+    <td><%= @result.group_name %></td>
+    <td><%= @result.group_place %></td>
+    <td><%= format_hours @result.swim_secs %></td>
+    <td><%= format_minutes @result.swim_pace_100 %></td>
+    <td><%= format_minutes @result.t1_secs %></td>
+    <td><%= format_hours @result.bike_secs %></td>
+    <td><%= format_mph @result.bike_mph %></td>
+    <td><%= format_minutes @result.t2_secs %></td>
+    <td><%= format_hours @result.run_secs %></td>
+    <td><%= format_minutes @result.run_mmile %></td>
+  </tr>
+
+  </tbody>
+</table>

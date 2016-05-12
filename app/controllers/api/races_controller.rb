@@ -23,7 +23,13 @@ module Api
           render plain: "/api/races/#{params[:race_id]}/results"
         end
       else
-        respond_with Race.all
+        if !params[:race_id]
+          respond_with Race.all
+        else
+          @race=Race.find(params[:race_id])
+          @entrants=@race.entrants
+          return render :partial => "api/results/index", :object => @entrants, :status => :ok
+        end
       end
     end
 
@@ -45,11 +51,16 @@ module Api
           return render plain: "/api/races/#{params[:race_id]}/results/#{params[:id]}"
         end
       else
-        if request.accept == "application/xml"
-          return render 'api/show', formats: [:xml]
-        end
-        if request.accept == "application/json"
-          return render 'api/show', formats: [:json]
+        if !params[:race_id]
+          if request.accept == "application/xml"
+            return render 'api/show', formats: [:xml]
+          end
+          if request.accept == "application/json"
+            return render 'api/show', formats: [:json]
+          end
+        else
+          @result=Race.find(params[:race_id]).entrants.where(:id => params[:id]).first
+          return render :partial => "api/result", :object => @result, :status => :ok
         end
         # respond_with @race
       end
@@ -78,6 +89,35 @@ module Api
       if @race.nil?
         return render plain: "woops: cannot find race[#{params[:id]}]", status: :not_found
       end
+      if params[:race_id]
+        entrant=Race.find(params[:race_id]).entrants.where(:id => params[:id]).first
+        parameters = params[:result].to_hash
+
+        if parameters
+          if parameters["swim"]
+            entrant.swim=entrant.race.race.swim
+            entrant.swim_secs = parameters["swim"].to_f
+          end
+          if !parameters["t1"].nil?
+            entrant.t1=entrant.race.race.t1
+            entrant.t1_secs = parameters["t1"].to_f
+          end
+          if !parameters["bike"].nil?
+            entrant.bike=entrant.race.race.bike
+            entrant.bike_secs = parameters["bike"].to_f
+          end
+          if !parameters["t2"].nil?
+            entrant.t2=entrant.race.race.t2
+            entrant.t2_secs = parameters["t2"].to_f
+          end
+          if parameters["run"]
+            entrant.run=entrant.race.race.run
+            entrant.run_secs = parameters["run"].to_f
+          end
+        end
+        entrant.save
+        return render :partial => "api/result", :object => entrant, :status => :ok
+      end
       if params[:race]
         @race.update(params[:race].to_hash)
         render json: @race, content_type: "application/json", status: :ok
@@ -90,12 +130,16 @@ module Api
 
     private
     def set_race
-      @race = Race.find(params[:id])
+      if !params[:race_id]
+        @race = Race.find(params[:id])
+      else
+        @race = Race.find(params[:race_id])
+      end
     rescue Mongoid::Errors::DocumentNotFound => e
     end
 
     def race_params
-      params.require(:race).permit(:name, :date, :city, :state, :swim_distance, :swim_units, :bike_distance, :bike_units, :run_distance, :run_units, :race_id)
+      params.require(:race).permit(:name, :date, :city, :state, :swim_distance, :swim_units, :bike_distance, :bike_units, :run_distance, :run_units, :race_id, :swim, :t1, :bike, :t2, :run, :result)
     end
 
   end

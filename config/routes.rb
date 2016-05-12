@@ -25,4 +25,5 @@ Rails.application.routes.draw do
 
   post "/api/races" => "api/races#create"
   put "/api/races/:id" => "api/races#update"
+  patch "/api/races/:race_id/results/:id" => "api/races#update"
 end
