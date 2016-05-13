@@ -15,7 +15,9 @@ Rails.application.routes.draw do
     resources :racers do
       post "entries" => "racers#create_entry"
     end
-    resources :races
+    resources :races do
+      resources :entrants
+    end
   end
 
   get "/api/races/:race_id/results" => "api/races#index"

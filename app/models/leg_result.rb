@@ -2,7 +2,7 @@ class LegResult
   include Mongoid::Document
   field :secs, type: Float, default: 0
 
-  embedded_in :entrant
+  embedded_in :entrant, touch: true
   embeds_one :event, as: :parent
 
   validates_presence_of :event

@@ -28,7 +28,13 @@ module Api
         else
           @race=Race.find(params[:race_id])
           @entrants=@race.entrants
-          return render :partial => "api/results/index", :object => @entrants, :status => :ok
+
+          if stale?(@entrants, last_modified: @entrants.max(:updated_at))
+            return render :partial => "api/results/index", :object => @entrants, :status => :ok
+          end
+
+          # @entrants.each { |entrant| fresh_when(entrant) } if @entrants
+          # return render :partial => "api/results/index", :object => @entrants, :status => :ok
         end
       end
     end

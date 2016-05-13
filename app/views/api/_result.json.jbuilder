@@ -21,7 +21,7 @@ json.t2 format_minutes result.t2_secs
 
 json.mmile format_minutes result.run_mmile
 if result.race and result.race.id
-  json.result_url api_race_url(result.race.id, result.id)
+  json.result_url "http://localhost:3000/api/races/#{result.race.id}/results/#{result.id}"
 end
 if result.racer and result.racer.id
   json.racer_url api_racer_url(result.racer.id)
