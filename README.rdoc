@@ -1,3 +1,0 @@
-== README
-
-This is the test project just to try some RoR :).
